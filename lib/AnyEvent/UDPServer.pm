@@ -20,13 +20,6 @@ sub new {
         %args
     }, $class;
 
-    $self->{server} = IO::Socket::INET->new(
-        LocalAddr => $self->{host},
-        LocalPort => $self->{port},
-        Proto     => 'udp',
-        Blocking  => 0
-    ) or Carp::croak "Socket could not be created: $!";
-
     $self->start;
 
     return $self;
@@ -41,6 +34,15 @@ sub on_data {
 
 sub start {
     my ($self) = @_;
+
+    unless ( defined $self->{server} ) {
+        $self->{server} = IO::Socket::INET->new(
+            LocalAddr => $self->{host},
+            LocalPort => $self->{port},
+            Proto     => 'udp',
+            Blocking  => 0
+        ) or Carp::croak "Socket could not be created: $!";
+    }
 
     Scalar::Util::weaken($self);
 
