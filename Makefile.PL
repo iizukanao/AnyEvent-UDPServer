@@ -2,7 +2,7 @@ use inc::Module::Install;
 name 'AnyEvent-UDPServer';
 all_from 'lib/AnyEvent/UDPServer.pm';
 
-# requires '';
+requires 'AnyEvent';
 
 tests 't/*.t';
 author_tests 'xt';
