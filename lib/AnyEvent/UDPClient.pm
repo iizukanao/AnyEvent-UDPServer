@@ -31,7 +31,7 @@ sub init {
         PeerAddr => $self->{host},
         PeerPort => $self->{port},
         Proto    => 'udp',
-        Blocking => 0,
+        Blocking => 0
     ) or die "Could not create socket: $!";
     return;
 }
