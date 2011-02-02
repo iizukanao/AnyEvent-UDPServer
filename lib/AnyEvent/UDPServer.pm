@@ -2,6 +2,7 @@ package AnyEvent::UDPServer;
 
 use strict;
 use warnings;
+use Coro;
 use AnyEvent (); BEGIN { AnyEvent::common_sense }
 use IO::Socket;
 use Scalar::Util ();
@@ -53,16 +54,18 @@ sub start {
             my $buf;
             my $retval = $self->{server}->recv($buf, $self->{maxlen});
             if (defined $retval) {
-                my $hersockaddr = $self->{server}->peername;
-                my ($port, $iaddr) = sockaddr_in($hersockaddr);
-                my $herstraddr = inet_ntoa($iaddr);
-                if (defined $self->{on_data}) {
-                    my $client = {
-                        addr => $herstraddr,
-                        port => $port,
-                    };
-                    $self->{on_data}->($self, $client, $buf);
-                }
+                async_pool {
+                    my $hersockaddr = $self->{server}->peername;
+                    my ($port, $iaddr) = sockaddr_in($hersockaddr);
+                    my $herstraddr = inet_ntoa($iaddr);
+                    if (defined $self->{on_data}) {
+                        my $client = {
+                            addr => $herstraddr,
+                            port => $port,
+                        };
+                        $self->{on_data}->($self, $client, $buf);
+                    }
+                };
             }
         },
     );
